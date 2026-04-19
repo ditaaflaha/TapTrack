@@ -19,4 +19,14 @@ class Employee extends Model
         'position',
         'date_of_birth',
     ];
+
+    public function canteenTransactions()
+    {
+        return $this->hasMany(CanteenTransaction::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

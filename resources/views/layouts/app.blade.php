@@ -54,16 +54,16 @@
                     <div class="pt-4 pb-1">
                         <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">KEHADIRAN</p>
                     </div>
-                    <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                        <i class="ph ph-calendar-check text-lg mr-3"></i>
+                    <a href="{{ route('attendances.index') }}" class="{{ request()->routeIs('attendances.*') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors">
+                        <i class="ph ph-calendar-check text-lg mr-3 {{ request()->routeIs('attendances.*') ? 'text-indigo-400' : '' }}"></i>
                         Absensi Tap
                     </a>
 
                     <div class="pt-4 pb-1">
                         <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">OPERASIONAL</p>
                     </div>
-                    <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                        <i class="ph ph-fork-knife text-lg mr-3"></i>
+                    <a href="{{ route('canteen-transactions.index') }}" class="{{ request()->routeIs('canteen-transactions.*') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors">
+                        <i class="ph ph-fork-knife text-lg mr-3 {{ request()->routeIs('canteen-transactions.*') ? 'text-indigo-400' : '' }}"></i>
                         Transaksi Kantin
                     </a>
                 </nav>
