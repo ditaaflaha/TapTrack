@@ -29,4 +29,9 @@ class Employee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function activities()
+    {
+        return $this->hasMany(EmployeeActivity::class);
+    }
 }
