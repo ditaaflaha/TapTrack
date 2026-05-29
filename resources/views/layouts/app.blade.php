@@ -36,35 +36,35 @@
                 <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
                         <i class="ph ph-house text-lg mr-3 {{ request()->routeIs('dashboard') ? 'text-indigo-400' : '' }}"></i>
-                        Dashboard
+                        {{ __('messages.dashboard') }}
                     </a>
 
                     <div class="pt-4 pb-1">
-                        <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">HR & PEGAWAI</p>
+                        <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('messages.hr_employees') }}</p>
                     </div>
                     <a href="{{ route('employees.index') }}" class="{{ request()->routeIs('employees.*') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors">
                         <i class="ph ph-users text-lg mr-3 {{ request()->routeIs('employees.*') ? 'text-indigo-400' : '' }}"></i>
-                        Daftar Karyawan
+                        {{ __('messages.employee_list') }}
                     </a>
-                    <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                        <i class="ph ph-chart-line-up text-lg mr-3"></i>
-                        Aktivitas Karyawan
+                    <a href="{{ route('employee-activities.index') }}" class="{{ request()->routeIs('employee-activities.*') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors">
+                        <i class="ph ph-chart-line-up text-lg mr-3 {{ request()->routeIs('employee-activities.*') ? 'text-indigo-400' : '' }}"></i>
+                        {{ __('messages.employee_activities') }}
                     </a>
 
                     <div class="pt-4 pb-1">
-                        <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">KEHADIRAN</p>
+                        <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('messages.attendance') }}</p>
                     </div>
                     <a href="{{ route('attendances.index') }}" class="{{ request()->routeIs('attendances.*') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors">
                         <i class="ph ph-calendar-check text-lg mr-3 {{ request()->routeIs('attendances.*') ? 'text-indigo-400' : '' }}"></i>
-                        Absensi Tap
+                        {{ __('messages.tap_attendance') }}
                     </a>
 
                     <div class="pt-4 pb-1">
-                        <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">OPERASIONAL</p>
+                        <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('messages.operations') }}</p>
                     </div>
                     <a href="{{ route('canteen-transactions.index') }}" class="{{ request()->routeIs('canteen-transactions.*') ? 'bg-[#252b43] text-white' : 'text-gray-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors">
                         <i class="ph ph-fork-knife text-lg mr-3 {{ request()->routeIs('canteen-transactions.*') ? 'text-indigo-400' : '' }}"></i>
-                        Transaksi Kantin
+                        {{ __('messages.canteen_transactions') }}
                     </a>
                 </nav>
 
@@ -86,10 +86,24 @@
             <div class="flex-1 flex flex-col w-full">
                 <!-- Top Header -->
                 <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-end px-6 z-10 transition-all duration-300">
-                    <!-- Dropdown could go here, for now a simple profile view -->
-                    <div class="flex items-center space-x-3 cursor-pointer">
-                        <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Admin' }}</span>
-                        <i class="ph ph-caret-down text-gray-400 text-xs"></i>
+                    <div class="flex items-center space-x-6">
+                        <!-- Language Switcher -->
+                        <a href="{{ route('lang.switch', app()->getLocale() == 'id' ? 'en' : 'id') }}" class="flex items-center text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors" title="{{ __('messages.switch_lang') }}">
+                            <i class="ph ph-translate text-lg mr-1"></i> {{ __('messages.lang_code') }}
+                        </a>
+                        
+                        <!-- Simple Profile Dropdown Mock -->
+                        <div class="flex items-center space-x-3 cursor-pointer">
+                            <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Admin' }}</span>
+                        </div>
+                        
+                        <!-- Logout Button -->
+                        <form method="POST" action="{{ route('logout') }}" class="flex items-center border-l pl-6 border-gray-200">
+                            @csrf
+                            <button type="submit" class="flex items-center text-sm font-medium text-red-500 hover:text-red-700 transition-colors">
+                                <i class="ph ph-sign-out text-lg mr-1"></i> {{ __('messages.logout') }}
+                            </button>
+                        </form>
                     </div>
                 </header>
 

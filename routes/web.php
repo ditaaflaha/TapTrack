@@ -7,9 +7,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -19,6 +17,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
     Route::resource('canteen-transactions', \App\Http\Controllers\CanteenTransactionController::class);
     Route::resource('attendances', \App\Http\Controllers\AttendanceController::class);
+    Route::resource('employee-activities', \App\Http\Controllers\EmployeeActivityController::class);
 });
+
+Route::get('/lang/{locale}', function (string $locale) {
+    if (! in_array($locale, ['en', 'id'])) {
+        abort(400);
+    }
+    session()->put('locale', $locale);
+    return redirect()->back();
+})->name('lang.switch');
 
 require __DIR__.'/auth.php';
