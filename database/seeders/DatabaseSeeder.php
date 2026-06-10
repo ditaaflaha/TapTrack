@@ -16,12 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
+        // Kita pakai User::create langsung tanpa factory agar data tersimpan murni dan aman
+        User::create([
             'name' => 'admin',
             'email' => 'admin@taptrack.local',
-            'password' => Hash::make('123456'),
+            'password' => Hash::make('123456'), // Password login kamu
         ]);
     }
 }

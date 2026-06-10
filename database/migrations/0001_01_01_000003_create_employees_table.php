@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('department');
             $table->string('position');
             $table->date('date_of_birth');
+            $table->string('no_rfid')->unique()->nullable();
             $table->timestamps();
         });
     }
