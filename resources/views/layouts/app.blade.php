@@ -23,8 +23,8 @@
             <aside class="w-64 bg-[#1a1d2d] flex-shrink-0 hidden md:flex flex-col text-gray-300 transition-all duration-300">
                 <!-- Logo -->
                 <div class="h-16 flex items-center px-6 border-b border-gray-800/60">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">
-                        SG
+                    <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-[#004785] mr-3">
+                        <img src="{{ asset('images/logo.svg') }}" alt="TapTrack Logo" class="w-full h-full object-cover" />
                     </div>
                     <span class="text-white font-bold text-xl tracking-wide">TapTrack</span>
                     <button class="ml-auto text-gray-400 hover:text-white">
@@ -76,7 +76,7 @@
                         </div>
                         <div class="ml-3 overflow-hidden">
                             <p class="text-sm font-medium text-white truncate">{{ Auth::user()->name ?? 'Admin' }}</p>
-                            <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@smartgate.com' }}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@taptrack.local' }}</p>
                         </div>
                     </div>
                 </div>

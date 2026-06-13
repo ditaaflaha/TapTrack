@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+    <!-- Blue Background -->
+    <rect width="512" height="512" fill="#004785" />
+    
+    <!-- Smartphone Outline -->
+    <rect x="90" y="85" width="230" height="340" rx="35" fill="none" stroke="#ffffff" stroke-width="20" />
+    <!-- Smartphone Bottom Pill Button -->
+    <rect x="185" y="385" width="40" height="10" rx="5" fill="#7cc7ec" />
+    
+    <!-- NFC Wave Arcs on the Phone (Light Blue) -->
+    <!-- Large Arc -->
+    <path d="M 245 155 A 110 110 0 0 1 245 315" fill="none" stroke="#7cc7ec" stroke-width="20" stroke-linecap="round" />
+    <!-- Small Arc -->
+    <path d="M 225 185 A 70 70 0 0 1 225 285" fill="none" stroke="#52a9db" stroke-width="20" stroke-linecap="round" />
+
+    <!-- Tilted Smart Card -->
+    <g transform="translate(355, 290) rotate(-33)">
+        <!-- Card Body (White) -->
+        <rect x="-140" y="-90" width="280" height="180" rx="20" fill="#ffffff" stroke="#ffffff" stroke-width="2" />
+        
+        <!-- Blue Chip / Square on Card -->
+        <rect x="-105" y="-50" width="45" height="40" rx="8" fill="#004785" />
+        
+        <!-- Wave lines on Card (Dark Blue) -->
+        <path d="M -5 -40 A 55 55 0 0 1 -5 40" fill="none" stroke="#004785" stroke-width="12" stroke-linecap="round" />
+        <path d="M 20 -50 A 75 75 0 0 1 20 50" fill="none" stroke="#004785" stroke-width="12" stroke-linecap="round" />
+        <path d="M 45 -60 A 95 95 0 0 1 45 60" fill="none" stroke="#004785" stroke-width="12" stroke-linecap="round" />
+    </g>
+</svg>

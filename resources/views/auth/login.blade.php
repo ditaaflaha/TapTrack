@@ -12,84 +12,99 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased text-gray-900 bg-gray-100 min-h-screen relative overflow-hidden">
-    <!-- Background Decoration -->
-    <div class="fixed top-0 left-0 w-full h-full z-0 overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-        <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-white opacity-20 blur-3xl"></div>
-        <div class="absolute top-1/2 left-1/4 w-80 h-80 rounded-full bg-blue-300 opacity-20 blur-3xl mix-blend-multiply"></div>
-        <div class="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-pink-300 opacity-30 blur-3xl"></div>
+<body class="font-sans antialiased text-slate-900 bg-slate-50 min-h-screen flex flex-col sm:justify-center items-center py-8 px-4 relative overflow-x-hidden">
+    <!-- Ambient Glow Background -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-purple-200/30 to-indigo-200/30 blur-3xl opacity-80"></div>
     </div>
 
-    <div class="relative z-10 min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <!-- Logo Area -->
-        <div class="mb-8 text-center text-white">
-            <h1 class="text-5xl font-extrabold tracking-wider drop-shadow-md">TapTrack</h1>
-            <p class="mt-2 text-lg font-medium opacity-90 drop-shadow-sm">Sign in to your account</p>
+    <!-- Content Container -->
+    <div class="relative z-10 w-full max-w-[420px] my-6 flex flex-col items-center">
+        <!-- Laravel Top Wireframe Logo -->
+        <div class="mb-6 text-center">
+            <x-application-logo class="w-14 h-14 text-slate-300 fill-current mx-auto" />
         </div>
 
         <!-- Login Card -->
-        <div class="w-full sm:max-w-md px-10 py-10 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden sm:rounded-3xl relative">
-            
+        <div class="w-full bg-white shadow-2xl shadow-indigo-100/40 border border-slate-100 rounded-[2rem] px-8 py-10 sm:px-10">
+            <!-- App Logo & Title -->
+            <div class="text-center mb-8">
+                <!-- App Logo Image -->
+                <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-md mb-5 border border-slate-100 flex items-center justify-center bg-[#004785]">
+                    <img src="{{ asset('images/logo.svg') }}" alt="TapTrack Logo" class="w-full h-full object-cover" />
+                </div>
+                
+                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">TapTrack</h2>
+                <p class="text-xs font-semibold text-slate-400 italic mt-1.5">Integrated IoT & Presence System</p>
+            </div>
+
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-6">
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
                 <!-- Username -->
                 <div>
-                    <label for="name" class="block text-sm font-semibold text-white mb-2">Username</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
+                    <div class="relative rounded-xl shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <input id="name" class="pl-10 block w-full rounded-xl bg-white/20 border border-white/30 text-white placeholder-gray-200 focus:ring-4 focus:ring-white/20 focus:border-white focus:outline-none transition-all duration-300 py-3" type="text" name="name" :value="old('name')" required autofocus placeholder="Enter your username" />
+                        <input id="name" class="pl-11 block w-full rounded-xl border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200/50 focus:bg-white transition-all duration-200 py-3 text-sm" 
+                               type="text" name="name" :value="old('name')" required autofocus placeholder="Enter your username" />
                     </div>
-                    <x-input-error :messages="$errors->get('name')" class="mt-2 text-pink-200 bg-red-900/40 p-2 rounded-lg text-sm" />
+                    <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
                 </div>
 
                 <!-- Password -->
                 <div>
-                    <label for="password" class="block text-sm font-semibold text-white mb-2">Password</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="password" class="text-sm font-semibold text-slate-700">Password</label>
+                        @if (Route::has('password.request'))
+                            <a class="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors" href="{{ route('password.request') }}">
+                                Lupa sandi?
+                            </a>
+                        @endif
+                    </div>
+                    <div class="relative rounded-xl shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
-                        <input id="password" class="pl-10 block w-full rounded-xl bg-white/20 border border-white/30 text-white placeholder-gray-200 focus:ring-4 focus:ring-white/20 focus:border-white focus:outline-none transition-all duration-300 py-3"
-                                type="password"
-                                name="password"
-                                required autocomplete="current-password" placeholder="••••••••" />
+                        <input id="password" class="pl-11 block w-full rounded-xl border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200/50 focus:bg-white transition-all duration-200 py-3 text-sm"
+                                type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
                     </div>
-                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-pink-200 bg-red-900/40 p-2 rounded-lg text-sm" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
                 </div>
 
-                <!-- Remember Me & Forgot Password -->
-                <div class="flex items-center justify-between text-sm">
+                <!-- Remember Me -->
+                <div class="flex items-center">
                     <label for="remember_me" class="inline-flex items-center cursor-pointer group">
-                        <input id="remember_me" type="checkbox" class="rounded border-none bg-white/20 text-indigo-500 shadow-sm focus:ring-white/30 focus:ring-offset-0 transition-all cursor-pointer" name="remember">
-                        <span class="ms-2 text-white group-hover:text-indigo-100 transition-colors">Remember me</span>
+                        <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-all cursor-pointer">
+                        <span class="ms-2.5 text-xs text-slate-500 group-hover:text-slate-700 transition-colors font-medium">Biarkan saya tetap masuk</span>
                     </label>
-
-                    @if (Route::has('password.request'))
-                        <a class="text-white hover:text-indigo-200 transition-colors hover:underline" href="{{ route('password.request') }}">
-                            Forgot password?
-                        </a>
-                    @endif
                 </div>
 
-                <div class="mt-8">
-                    <button type="submit" class="w-full py-3 px-4 bg-white text-indigo-600 font-bold rounded-xl shadow-lg hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-indigo-300/50 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0">
-                        Sign In
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3.5 px-4 bg-[#4e3df5] hover:bg-[#4335d9] active:bg-[#392cb3] text-white font-bold rounded-xl shadow-lg shadow-indigo-100 hover:shadow-indigo-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 tracking-wider text-sm">
+                        SIGN IN
                     </button>
                 </div>
             </form>
-        </div>
-        
-        <div class="mt-8 text-center text-white/70 text-sm">
-            &copy; {{ date('Y') }} TapTrack. All rights reserved.
+            
+            <!-- Register Footer -->
+            @if (Route::has('register'))
+                <p class="mt-8 text-center text-xs font-semibold text-slate-400">
+                    Belum punya akun? 
+                    <a href="{{ route('register') }}" class="text-indigo-600 hover:text-indigo-700 hover:underline ml-1">
+                        Daftar sekarang
+                    </a>
+                </p>
+            @endif
         </div>
     </div>
 </body>
