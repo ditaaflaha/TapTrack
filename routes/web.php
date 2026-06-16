@@ -7,6 +7,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
