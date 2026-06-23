@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('position');
             $table->date('date_of_birth');
             $table->string('no_rfid')->unique()->nullable();
+            $table->integer('leave_balance')->default(12);
             $table->timestamps();
         });
     }

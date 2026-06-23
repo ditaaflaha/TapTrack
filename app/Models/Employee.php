@@ -18,6 +18,7 @@ class Employee extends Model
         'department',
         'position',
         'date_of_birth',
+        'leave_balance',
     ];
 
     public function canteenTransactions()

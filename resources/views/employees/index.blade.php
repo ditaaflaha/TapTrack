@@ -25,6 +25,7 @@
                         <th class="pb-3 font-medium px-4">Departemen</th>
                         <th class="pb-3 font-medium px-4">Jabatan</th>
                         <th class="pb-3 font-medium px-4">Join Date</th>
+                        <th class="pb-3 font-medium px-4 text-center">Sisa Cuti</th>
                         <th class="pb-3 font-medium px-4 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -41,6 +42,7 @@
                         </td>
                         <td class="py-4 px-4 text-gray-600">{{ $employee->position }}</td>
                         <td class="py-4 px-4 text-gray-600">{{ \Carbon\Carbon::parse($employee->join_date)->format('d M Y') }}</td>
+                        <td class="py-4 px-4 text-center font-semibold text-slate-700">{{ $employee->leave_balance }} Hari</td>
                         <td class="py-4 px-4 text-center">
                             <div class="flex justify-center space-x-2">
                                 <a href="{{ route('employees.edit', $employee->id) }}" class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors" title="Edit">
@@ -58,7 +60,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-gray-500">
+                        <td colspan="7" class="py-8 text-center text-gray-500">
                             <div class="flex flex-col items-center justify-center">
                                 <i class="ph ph-users text-4xl mb-3 text-gray-300"></i>
                                 Belum ada data karyawan.

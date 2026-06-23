@@ -83,6 +83,13 @@
                     <input type="text" name="position" id="position" value="{{ old('position', $employee->position) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors" required>
                     @error('position') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
+
+                <!-- Sisa Kuota Cuti -->
+                <div>
+                    <label for="leave_balance" class="block text-sm font-semibold text-gray-700 mb-2">Sisa Kuota Cuti (Hari) <span class="text-red-500">*</span></label>
+                    <input type="number" name="leave_balance" id="leave_balance" min="0" value="{{ old('leave_balance', $employee->leave_balance) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors" required>
+                    @error('leave_balance') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
             </div>
 
             <div class="mt-8 flex justify-end space-x-3 border-t border-gray-100 pt-6">

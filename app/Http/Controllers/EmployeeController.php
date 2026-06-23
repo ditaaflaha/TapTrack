@@ -29,6 +29,7 @@ class EmployeeController extends Controller
             'department' => 'required|string',
             'position' => 'required|string',
             'date_of_birth' => 'required|date',
+            'leave_balance' => 'required|integer|min:0',
         ]);
 
         Employee::create($validated);
@@ -57,6 +58,7 @@ class EmployeeController extends Controller
             'department' => 'required|string',
             'position' => 'required|string',
             'date_of_birth' => 'required|date',
+            'leave_balance' => 'required|integer|min:0',
         ]);
 
         $employee->update($validated);

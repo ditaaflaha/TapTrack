@@ -40,6 +40,7 @@ class DashboardController extends Controller
                 'department' => 'IT Department',
                 'position' => 'Senior Developer',
                 'date_of_birth' => '1992-08-25',
+                'leave_balance' => 8,
             ],
             [
                 'nik' => 'NIK203948',
@@ -50,6 +51,7 @@ class DashboardController extends Controller
                 'department' => 'Finance & HR',
                 'position' => 'HR Specialist',
                 'date_of_birth' => '1995-11-12',
+                'leave_balance' => 11,
             ],
             [
                 'nik' => 'NIK304958',
@@ -60,6 +62,7 @@ class DashboardController extends Controller
                 'department' => 'Operations',
                 'position' => 'Operations Head',
                 'date_of_birth' => '1989-04-03',
+                'leave_balance' => 5,
             ],
             [
                 'nik' => 'NIK405968',
@@ -70,6 +73,7 @@ class DashboardController extends Controller
                 'department' => 'Marketing',
                 'position' => 'Graphic Designer',
                 'date_of_birth' => '1998-07-30',
+                'leave_balance' => 12,
             ],
             [
                 'nik' => 'NIK506978',
@@ -80,6 +84,7 @@ class DashboardController extends Controller
                 'department' => 'IT Department',
                 'position' => 'Support Engineer',
                 'date_of_birth' => '1994-05-18',
+                'leave_balance' => 9,
             ]
         ];
 
@@ -168,6 +173,14 @@ class DashboardController extends Controller
         // Attendances Today
         $totalAttendanceToday = Attendance::whereDate('date', Carbon::today())->count();
 
+        // Total Leave Balance (Sisa Cuti)
+        $totalLeaveBalance = Employee::sum('leave_balance');
+
+        // Abnormal Attendance Today (status is Terlambat or Absen)
+        $totalAbnormalAttendanceToday = Attendance::whereDate('date', Carbon::today())
+            ->whereIn('status', ['Terlambat', 'Absen'])
+            ->count();
+
         // Last Rolling Door activities (feed)
         $latestActivities = EmployeeActivity::with('employee')
             ->latest('scanned_at')
@@ -201,7 +214,9 @@ class DashboardController extends Controller
             'totalAttendanceToday',
             'latestActivities',
             'latestCanteen',
-            'employeesInsideCount'
+            'employeesInsideCount',
+            'totalLeaveBalance',
+            'totalAbnormalAttendanceToday'
         ));
     }
 }

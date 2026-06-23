@@ -19,7 +19,7 @@
     </div>
 
     <!-- Quick Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <!-- Total Karyawan -->
         <div class="relative bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-3xl p-6 text-white overflow-hidden shadow-lg shadow-indigo-100 hover:shadow-xl transition-all duration-300">
             <div class="absolute -bottom-4 -right-4 w-28 h-28 bg-white/10 rounded-2xl transform rotate-12 backdrop-blur-sm"></div>
@@ -50,6 +50,22 @@
             <h3 class="text-violet-100 font-medium text-sm mb-1 relative z-10">Di Dalam Perusahaan</h3>
             <div class="text-4xl font-extrabold mb-1 relative z-10">{{ $employeesInsideCount }}</div>
             <p class="text-xs text-violet-100/80 relative z-10">Estimasi keberadaan karyawan</p>
+        </div>
+
+        <!-- Sisa Cuti -->
+        <div class="relative bg-gradient-to-br from-sky-500 to-cyan-600 rounded-3xl p-6 text-white overflow-hidden shadow-lg shadow-cyan-100 hover:shadow-xl transition-all duration-300">
+            <div class="absolute -bottom-4 -right-4 w-28 h-28 bg-white/10 rounded-2xl transform rotate-12 backdrop-blur-sm"></div>
+            <h3 class="text-cyan-100 font-medium text-sm mb-1 relative z-10">Total Sisa Cuti</h3>
+            <div class="text-4xl font-extrabold mb-1 relative z-10">{{ $totalLeaveBalance }} Hari</div>
+            <p class="text-xs text-cyan-100/80 relative z-10">Akumulasi sisa cuti semua karyawan</p>
+        </div>
+
+        <!-- Abnormal Absensi -->
+        <div class="relative bg-gradient-to-br from-rose-500 to-red-600 rounded-3xl p-6 text-white overflow-hidden shadow-lg shadow-rose-100 hover:shadow-xl transition-all duration-300">
+            <div class="absolute -bottom-4 -right-4 w-28 h-28 bg-white/10 rounded-2xl transform rotate-12 backdrop-blur-sm"></div>
+            <h3 class="text-rose-100 font-medium text-sm mb-1 relative z-10">Abnormal Absensi</h3>
+            <div class="text-4xl font-extrabold mb-1 relative z-10">{{ $totalAbnormalAttendanceToday }}</div>
+            <p class="text-xs text-rose-100/80 relative z-10">Karyawan terlambat/absen hari ini</p>
         </div>
     </div>
 

@@ -40,12 +40,23 @@ class AttendanceController extends Controller
                   ->whereYear('date', Carbon::now()->year);
         }
 
+        // Stats calculation clone before status filter
+        $statsQuery = clone $query;
+        $totalLate = (clone $statsQuery)->where('status', 'Terlambat')->count();
+        $totalOvertimeSum = (clone $statsQuery)->sum('overtime_hours');
+
+        // Filter by Status / Abnormal
+        if ($request->filled('status_filter')) {
+            $statusFilter = $request->status_filter;
+            if ($statusFilter === 'Abnormal') {
+                $query->whereIn('status', ['Terlambat', 'Absen']);
+            } else {
+                $query->where('status', $statusFilter);
+            }
+        }
+
         $attendances = $query->latest('date')->latest('id')->paginate(15);
         
-        $totalLate = $query->where('status', 'Terlambat')->count();
-        $totalOvertime = clone $query;
-        $totalOvertimeSum = collect($query->get())->sum('overtime_hours');
-
         return view('attendances.index', compact('attendances', 'totalLate', 'totalOvertimeSum'));
     }
 
@@ -55,32 +66,38 @@ class AttendanceController extends Controller
         return view('attendances.create', compact('employees'));
     }
 
-    private function computeAttendanceData(&$validated)
+    private function computeAttendanceData(&$validated, $statusInput = null)
     {
-        $validated['status'] = 'Tepat Waktu';
         $validated['overtime_hours'] = 0;
 
-        if (!empty($validated['tap_in'])) {
-            $tapInTime = Carbon::createFromFormat('H:i', $validated['tap_in']);
-            $thresholdTime = Carbon::createFromFormat('H:i', '08:00');
+        if (in_array($statusInput, ['Cuti', 'Izin', 'Sakit', 'Absen'])) {
+            $validated['status'] = $statusInput;
+            $validated['tap_in'] = null;
+            $validated['tap_out'] = null;
+        } else {
+            $validated['status'] = 'Tepat Waktu';
             
-            if ($tapInTime->greaterThan($thresholdTime)) {
-                $validated['status'] = 'Terlambat';
+            if (!empty($validated['tap_in'])) {
+                $tapInTime = Carbon::createFromFormat('H:i', $validated['tap_in']);
+                $thresholdTime = Carbon::createFromFormat('H:i', '08:00');
+                
+                if ($tapInTime->greaterThan($thresholdTime)) {
+                    $validated['status'] = 'Terlambat';
+                }
+            }
+
+            if (!empty($validated['tap_out'])) {
+                $tapOutTime = Carbon::createFromFormat('H:i', $validated['tap_out']);
+                $endDayTime = Carbon::createFromFormat('H:i', '17:00');
+                
+                $diffHours = $endDayTime->diffInHours($tapOutTime, false); 
+                if ($diffHours >= 1) {
+                    $validated['overtime_hours'] = floor($diffHours);
+                }
             }
         }
 
-        if (!empty($validated['tap_out'])) {
-            $tapOutTime = Carbon::createFromFormat('H:i', $validated['tap_out']);
-            $endDayTime = Carbon::createFromFormat('H:i', '17:00');
-            
-            $diffHours = $endDayTime->diffInHours($tapOutTime, false); 
-            if ($diffHours >= 1) {
-                // Berarti lebih dari atau sama dengan 1 jam lembur -> 18:00 ke atas
-                $validated['overtime_hours'] = floor($diffHours);
-            }
-        }
-
-        $validated['is_manual'] = request()->has('is_manual');
+        $validated['is_manual'] = request()->has('is_manual') || request()->filled('is_manual');
     }
 
     public function store(Request $request)
@@ -90,9 +107,10 @@ class AttendanceController extends Controller
             'date' => 'required|date',
             'tap_in' => 'nullable|date_format:H:i',
             'tap_out' => 'nullable|date_format:H:i',
+            'status' => 'required|string|in:Hadir,Cuti,Izin,Sakit,Absen',
         ]);
 
-        $this->computeAttendanceData($validated);
+        $this->computeAttendanceData($validated, $request->status);
         Attendance::create($validated);
 
         return redirect()->route('attendances.index')->with('success', 'Data absensi berhasil ditambahkan.');
@@ -124,9 +142,10 @@ class AttendanceController extends Controller
             'date' => 'required|date',
             'tap_in' => 'nullable|date_format:H:i',
             'tap_out' => 'nullable|date_format:H:i',
+            'status' => 'required|string|in:Hadir,Cuti,Izin,Sakit,Absen',
         ]);
 
-        $this->computeAttendanceData($validated);
+        $this->computeAttendanceData($validated, $request->status);
         $attendance->update($validated);
 
         return redirect()->route('attendances.index')->with('success', 'Data absensi berhasil diperbarui.');

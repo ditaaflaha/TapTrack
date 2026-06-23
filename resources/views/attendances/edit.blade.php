@@ -44,15 +44,28 @@
                     @error('date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
+                <!-- Status Kehadiran -->
+                <div class="md:col-span-2">
+                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">Status Kehadiran <span class="text-red-500">*</span></label>
+                    <select name="status" id="status" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors" required onchange="toggleTimeFields()">
+                        <option value="Hadir" {{ in_array(old('status', $attendance->status), ['Tepat Waktu', 'Terlambat']) ? 'selected' : '' }}>Hadir (Hitung otomatis berdasarkan waktu Tap)</option>
+                        <option value="Cuti" {{ old('status', $attendance->status) == 'Cuti' ? 'selected' : '' }}>Cuti</option>
+                        <option value="Izin" {{ old('status', $attendance->status) == 'Izin' ? 'selected' : '' }}>Izin</option>
+                        <option value="Sakit" {{ old('status', $attendance->status) == 'Sakit' ? 'selected' : '' }}>Sakit (MC)</option>
+                        <option value="Absen" {{ old('status', $attendance->status) == 'Absen' ? 'selected' : '' }}>Absen</option>
+                    </select>
+                    @error('status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
                 <!-- Tap In -->
-                <div>
+                <div id="tap_in_container">
                     <label for="tap_in" class="block text-sm font-semibold text-gray-700 mb-2">Waktu Tap In (HH:MM)</label>
                     <input type="time" name="tap_in" id="tap_in" value="{{ old('tap_in', $attendance->tap_in) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors">
                     @error('tap_in') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Tap Out -->
-                <div>
+                <div id="tap_out_container">
                     <label for="tap_out" class="block text-sm font-semibold text-gray-700 mb-2">Waktu Tap Out (HH:MM)</label>
                     <input type="time" name="tap_out" id="tap_out" value="{{ old('tap_out', $attendance->tap_out) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors">
                     @error('tap_out') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -74,4 +87,29 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function toggleTimeFields() {
+            const status = document.getElementById('status').value;
+            const tapIn = document.getElementById('tap_in');
+            const tapOut = document.getElementById('tap_out');
+            const tapInContainer = document.getElementById('tap_in_container');
+            const tapOutContainer = document.getElementById('tap_out_container');
+            
+            if (status === 'Hadir') {
+                tapIn.disabled = false;
+                tapOut.disabled = false;
+                tapInContainer.style.opacity = '1';
+                tapOutContainer.style.opacity = '1';
+            } else {
+                tapIn.disabled = true;
+                tapOut.disabled = true;
+                tapIn.value = '';
+                tapOut.value = '';
+                tapInContainer.style.opacity = '0.5';
+                tapOutContainer.style.opacity = '0.5';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', toggleTimeFields);
+    </script>
 </x-app-layout>

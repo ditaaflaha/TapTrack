@@ -54,6 +54,20 @@
                 </select>
             </div>
             
+            <div class="w-full md:w-1/4">
+                <label class="block text-xs font-semibold text-gray-500 mb-2">Filter Status</label>
+                <select name="status_filter" id="status_filter" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    <option value="">Semua Status</option>
+                    <option value="Tepat Waktu" {{ request('status_filter') == 'Tepat Waktu' ? 'selected' : '' }}>Tepat Waktu</option>
+                    <option value="Terlambat" {{ request('status_filter') == 'Terlambat' ? 'selected' : '' }}>Terlambat</option>
+                    <option value="Cuti" {{ request('status_filter') == 'Cuti' ? 'selected' : '' }}>Cuti</option>
+                    <option value="Izin" {{ request('status_filter') == 'Izin' ? 'selected' : '' }}>Izin</option>
+                    <option value="Sakit" {{ request('status_filter') == 'Sakit' ? 'selected' : '' }}>Sakit (MC)</option>
+                    <option value="Absen" {{ request('status_filter') == 'Absen' ? 'selected' : '' }}>Absen</option>
+                    <option value="Abnormal" {{ request('status_filter') == 'Abnormal' ? 'selected' : '' }}>Abnormal (Terlambat & Absen)</option>
+                </select>
+            </div>
+            
             <div class="w-full md:w-1/4 filter-input" id="input_daily" style="display: none;">
                 <label class="block text-xs font-semibold text-gray-500 mb-2">Pilih Tanggal</label>
                 <input type="date" name="date" value="{{ request('date', date('Y-m-d')) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800">
@@ -135,9 +149,25 @@
                                 <span class="bg-green-50 border border-green-200 text-green-600 px-3 py-1 rounded-full text-xs font-semibold flex items-center justify-center w-max mx-auto">
                                     <i class="ph-fill ph-check-circle mr-1"></i> Tepat Waktu
                                 </span>
-                            @else
+                            @elseif($attn->status == 'Terlambat')
                                 <span class="bg-red-50 border border-red-200 text-red-600 px-3 py-1 rounded-full text-xs font-semibold flex items-center justify-center w-max mx-auto">
                                     <i class="ph-fill ph-warning-circle mr-1"></i> Terlambat
+                                </span>
+                            @elseif($attn->status == 'Cuti')
+                                <span class="bg-sky-50 border border-sky-200 text-sky-600 px-3 py-1 rounded-full text-xs font-semibold flex items-center justify-center w-max mx-auto">
+                                    <i class="ph-fill ph-calendar-blank mr-1"></i> Cuti
+                                </span>
+                            @elseif($attn->status == 'Izin')
+                                <span class="bg-amber-50 border border-amber-200 text-amber-600 px-3 py-1 rounded-full text-xs font-semibold flex items-center justify-center w-max mx-auto">
+                                    <i class="ph-fill ph-info mr-1"></i> Izin
+                                </span>
+                            @elseif($attn->status == 'Sakit')
+                                <span class="bg-purple-50 border border-purple-200 text-purple-600 px-3 py-1 rounded-full text-xs font-semibold flex items-center justify-center w-max mx-auto">
+                                    <i class="ph-fill ph-first-aid mr-1"></i> Sakit (MC)
+                                </span>
+                            @else
+                                <span class="bg-gray-100 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold flex items-center justify-center w-max mx-auto">
+                                    <i class="ph-fill ph-user-focus mr-1"></i> Absen
                                 </span>
                             @endif
                         </td>
