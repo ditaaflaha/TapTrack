@@ -20,18 +20,13 @@
 
     <!-- Content Container -->
     <div class="relative z-10 w-full max-w-[420px] my-6 flex flex-col items-center">
-        <!-- Laravel Top Wireframe Logo -->
-        <div class="mb-6 text-center">
-            <x-application-logo class="w-14 h-14 text-slate-300 fill-current mx-auto" />
-        </div>
-
         <!-- Login Card -->
         <div class="w-full bg-white shadow-2xl shadow-indigo-100/40 border border-slate-100 rounded-[2rem] px-8 py-10 sm:px-10">
             <!-- App Logo & Title -->
             <div class="text-center mb-8">
                 <!-- App Logo Image -->
                 <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-md mb-5 border border-slate-100 flex items-center justify-center bg-[#004785]">
-                    <img src="{{ asset('images/logo.svg') }}" alt="TapTrack Logo" class="w-full h-full object-cover" />
+                    <img src="{{ asset('images/logo.jpg') }}" alt="TapTrack Logo" class="w-full h-full object-cover" />
                 </div>
                 
                 <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">TapTrack</h2>
@@ -64,7 +59,7 @@
                         <label for="password" class="text-sm font-semibold text-slate-700">Password</label>
                         @if (Route::has('password.request'))
                             <a class="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors" href="{{ route('password.request') }}">
-                                Lupa sandi?
+                                Forgot password?
                             </a>
                         @endif
                     </div>
@@ -84,7 +79,7 @@
                 <div class="flex items-center">
                     <label for="remember_me" class="inline-flex items-center cursor-pointer group">
                         <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-all cursor-pointer">
-                        <span class="ms-2.5 text-xs text-slate-500 group-hover:text-slate-700 transition-colors font-medium">Biarkan saya tetap masuk</span>
+                        <span class="ms-2.5 text-xs text-slate-500 group-hover:text-slate-700 transition-colors font-medium">Remember me</span>
                     </label>
                 </div>
 
@@ -99,9 +94,9 @@
             <!-- Register Footer -->
             @if (Route::has('register'))
                 <p class="mt-8 text-center text-xs font-semibold text-slate-400">
-                    Belum punya akun? 
+                    Don't have an account? 
                     <a href="{{ route('register') }}" class="text-indigo-600 hover:text-indigo-700 hover:underline ml-1">
-                        Daftar sekarang
+                        Register now
                     </a>
                 </p>
             @endif

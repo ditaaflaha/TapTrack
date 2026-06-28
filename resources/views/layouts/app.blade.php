@@ -24,7 +24,7 @@
                 <!-- Logo -->
                 <div class="h-16 flex items-center px-6 border-b border-gray-800/60">
                     <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-[#004785] mr-3">
-                        <img src="{{ asset('images/logo.svg') }}" alt="TapTrack Logo" class="w-full h-full object-cover" />
+                        <img src="{{ asset('images/logo.jpg') }}" alt="TapTrack Logo" class="w-full h-full object-cover" />
                     </div>
                     <span class="text-white font-bold text-xl tracking-wide">TapTrack</span>
                     <button class="ml-auto text-gray-400 hover:text-white">
