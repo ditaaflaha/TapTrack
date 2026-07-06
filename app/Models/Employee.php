@@ -19,6 +19,7 @@ class Employee extends Model
         'position',
         'date_of_birth',
         'leave_balance',
+        'no_rfid',
     ];
 
     public function canteenTransactions()

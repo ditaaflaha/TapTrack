@@ -90,6 +90,13 @@
                     <input type="number" name="leave_balance" id="leave_balance" min="0" value="{{ old('leave_balance', $employee->leave_balance) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors" required>
                     @error('leave_balance') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
+
+                <!-- Nomor RFID -->
+                <div>
+                    <label for="no_rfid" class="block text-sm font-semibold text-gray-700 mb-2">Nomor Kartu RFID</label>
+                    <input type="text" name="no_rfid" id="no_rfid" value="{{ old('no_rfid', $employee->no_rfid) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors" placeholder="Contoh: 2E C7 F9 05">
+                    @error('no_rfid') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
             </div>
 
             <div class="mt-8 flex justify-end space-x-3 border-t border-gray-100 pt-6">

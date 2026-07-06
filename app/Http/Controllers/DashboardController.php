@@ -8,6 +8,7 @@ use App\Models\Attendance;
 use App\Models\EmployeeActivity;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -218,5 +219,55 @@ class DashboardController extends Controller
             'totalLeaveBalance',
             'totalAbnormalAttendanceToday'
         ));
+    }
+
+    public function toggleGate(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:unlock,lock'
+        ]);
+
+        $action = $request->action; // 'unlock' or 'lock'
+
+        $host = env('MQTT_HOST', 'broker.hivemq.com');
+        $port = (int) env('MQTT_PORT', 1883);
+        $clientId = env('MQTT_CLIENT_ID', 'taptrack_laravel_' . uniqid());
+        $username = env('MQTT_USERNAME');
+        $password = env('MQTT_PASSWORD');
+        $commandTopic = env('MQTT_TOPIC_COMMAND', 'taptrack/akses_pintu/command');
+
+        try {
+            $mqtt = new \PhpMqtt\Client\MqttClient($host, $port, $clientId);
+
+            $settings = (new \PhpMqtt\Client\ConnectionSettings());
+            if (!empty($username)) {
+                $settings->setUsername($username);
+            }
+            if (!empty($password)) {
+                $settings->setPassword($password);
+            }
+
+            $mqtt->connect($settings, true);
+            
+            $payload = json_encode([
+                'status' => 'control',
+                'action' => $action
+            ]);
+
+            $mqtt->publish($commandTopic, $payload, 0);
+            $mqtt->disconnect();
+
+            return response()->json([
+                'status' => 'success',
+                'action' => $action,
+                'message' => 'Sinyal ' . ($action === 'unlock' ? 'BUKA' : 'KUNCI') . ' berhasil dikirim ke Rolling Door.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal mengirim sinyal ke MQTT: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

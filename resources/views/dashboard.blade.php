@@ -295,19 +295,40 @@
 
             // Click listener
             toggleGateBtn.addEventListener('click', () => {
-                // Add click effect / disable state briefly to simulate network call
                 toggleGateBtn.disabled = true;
-                gateDescription.textContent = "Sedang mengirimkan sinyal kendali ke gerbang elektronik...";
+                const nextAction = (isLocked === 'true') ? 'unlock' : 'lock';
+                gateDescription.textContent = "Sedang mengirimkan sinyal kendali ke gerbang elektronik via MQTT...";
                 gateVisualBorder.classList.add('animate-pulse');
 
-                setTimeout(() => {
-                    isLocked = (isLocked === 'true') ? 'false' : 'true';
+                fetch('{{ route("gate.toggle") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ action: nextAction })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.message || 'Gagal mengirim sinyal.'); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    isLocked = (nextAction === 'unlock') ? 'false' : 'true';
                     localStorage.setItem('rolling_door_locked', isLocked);
                     updateUI(isLocked);
-                    
+                    gateDescription.textContent = data.message;
+                })
+                .catch(error => {
+                    console.error('Error toggling gate:', error);
+                    alert('Gagal mengontrol pintu: ' + error.message);
+                    updateUI(isLocked);
+                })
+                .finally(() => {
                     toggleGateBtn.disabled = false;
                     gateVisualBorder.classList.remove('animate-pulse');
-                }, 800);
+                });
             });
         });
     </script>

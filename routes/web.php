@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('canteen-transactions', \App\Http\Controllers\CanteenTransactionController::class);
     Route::resource('attendances', \App\Http\Controllers\AttendanceController::class);
     Route::resource('employee-activities', \App\Http\Controllers\EmployeeActivityController::class);
+    Route::post('/gate/toggle', [\App\Http\Controllers\DashboardController::class, 'toggleGate'])->name('gate.toggle');
 });
 
 Route::get('/lang/{locale}', function (string $locale) {

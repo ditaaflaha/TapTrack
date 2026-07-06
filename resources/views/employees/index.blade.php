@@ -24,6 +24,7 @@
                         <th class="pb-3 font-medium px-4">Nama</th>
                         <th class="pb-3 font-medium px-4">Departemen</th>
                         <th class="pb-3 font-medium px-4">Jabatan</th>
+                        <th class="pb-3 font-medium px-4">RFID Card</th>
                         <th class="pb-3 font-medium px-4">Join Date</th>
                         <th class="pb-3 font-medium px-4 text-center">Sisa Cuti</th>
                         <th class="pb-3 font-medium px-4 text-center">Aksi</th>
@@ -41,6 +42,13 @@
                             <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">{{ $employee->department }}</span>
                         </td>
                         <td class="py-4 px-4 text-gray-600">{{ $employee->position }}</td>
+                        <td class="py-4 px-4 text-gray-600 font-mono text-xs">
+                            @if($employee->no_rfid)
+                                <span class="bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg font-bold">{{ $employee->no_rfid }}</span>
+                            @else
+                                <span class="text-gray-400 italic">Belum Set</span>
+                            @endif
+                        </td>
                         <td class="py-4 px-4 text-gray-600">{{ \Carbon\Carbon::parse($employee->join_date)->format('d M Y') }}</td>
                         <td class="py-4 px-4 text-center font-semibold text-slate-700">{{ $employee->leave_balance }} Hari</td>
                         <td class="py-4 px-4 text-center">
@@ -60,7 +68,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-8 text-center text-gray-500">
+                        <td colspan="8" class="py-8 text-center text-gray-500">
                             <div class="flex flex-col items-center justify-center">
                                 <i class="ph ph-users text-4xl mb-3 text-gray-300"></i>
                                 Belum ada data karyawan.

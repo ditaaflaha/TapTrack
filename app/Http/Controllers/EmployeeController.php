@@ -30,6 +30,7 @@ class EmployeeController extends Controller
             'position' => 'required|string',
             'date_of_birth' => 'required|date',
             'leave_balance' => 'required|integer|min:0',
+            'no_rfid' => 'nullable|string|unique:employees,no_rfid',
         ]);
 
         Employee::create($validated);
@@ -59,6 +60,7 @@ class EmployeeController extends Controller
             'position' => 'required|string',
             'date_of_birth' => 'required|date',
             'leave_balance' => 'required|integer|min:0',
+            'no_rfid' => 'nullable|string|unique:employees,no_rfid,' . $employee->id,
         ]);
 
         $employee->update($validated);
