@@ -191,67 +191,72 @@ class MqttSubscribeCommand extends Command
                     $this->info("Absensi success published to {$commandTopic}");
                 }
 
-                // Node 2: AKSES PINTU (Door Control with 2 Solenoids)
+                // Node 2: AKSES PINTU (2 ESP32 Terpisah: Masuk & Keluar)
                 elseif ($node === 'akses_pintu') {
-                    // Smart direction logic: Check the last activity today to alternate
-                    $lastActivity = EmployeeActivity::where('employee_id', $employee->id)
-                                                    ->whereDate('scanned_at', Carbon::today())
-                                                    ->latest('scanned_at')
-                                                    ->first();
-                    
-                    $nextDirection = ($lastActivity && $lastActivity->activity_type === 'tap_in') ? 'tap_out' : 'tap_in';
-                    $relayCh = ($nextDirection === 'tap_in') ? 1 : 2; // IN1 (Solenoid 1) for entering, IN2 (Solenoid 2) for exiting
+                    // Gunakan direction dari ESP (bukan toggle otomatis)
+                    // ESP Masuk  → mengirim direction "masuk"  → tap_in  → relay_ch 1
+                    // ESP Keluar → mengirim direction "keluar" → tap_out → relay_ch 2
+                    $directionRaw = strtolower(trim($data['direction'] ?? 'masuk'));
+                    $nextDirection = ($directionRaw === 'keluar') ? 'tap_out' : 'tap_in';
+                    $relayCh      = ($nextDirection === 'tap_in') ? 1 : 2;
 
-                    // Log activity
-                    EmployeeActivity::create([
-                        'employee_id' => $employee->id,
-                        'activity_type' => $nextDirection,
-                        'scanned_at' => $scannedAt,
-                        'is_manual' => false,
-                        'notes' => 'Tapped via Akses Pintu RFID (Solenoid ' . $relayCh . ')',
-                    ]);
-
-                    // Update Attendance
+                    // Ambil data absensi hari ini
                     $attendance = Attendance::where('employee_id', $employee->id)
                                             ->where('date', $hariIni)
                                             ->first();
 
+                    // Validasi: tidak bisa keluar kalau belum masuk
+                    if ($nextDirection === 'tap_out' && (!$attendance || !$attendance->tap_in)) {
+                        $this->warn("Akses keluar ditolak untuk {$employee->name}: belum tap masuk hari ini.");
+                        $responsePayload = json_encode([
+                            'status'  => 'error',
+                            'message' => 'not_in_yet',
+                            'name'    => $employee->name,
+                            'uid'     => $uid,
+                            'direction' => 'keluar',
+                        ]);
+                        $mqtt->publish($commandTopic, $responsePayload, 0);
+                        return;
+                    }
+
+                    // Log aktivitas
+                    EmployeeActivity::create([
+                        'employee_id'   => $employee->id,
+                        'activity_type' => $nextDirection,
+                        'scanned_at'    => $scannedAt,
+                        'is_manual'     => false,
+                        'notes'         => 'Tapped via Akses Pintu RFID (' . ($nextDirection === 'tap_in' ? 'Pintu Masuk' : 'Pintu Keluar') . ')',
+                    ]);
+
+                    // Update Attendance
                     if ($nextDirection === 'tap_in') {
                         if (!$attendance) {
                             Attendance::create([
                                 'employee_id' => $employee->id,
-                                'date' => $hariIni,
-                                'tap_in' => $waktuSekarang,
-                                'status' => Carbon::now()->format('H:i') > '08:00' ? 'Terlambat' : 'Tepat Waktu',
-                                'is_manual' => false,
+                                'date'        => $hariIni,
+                                'tap_in'      => $waktuSekarang,
+                                'status'      => Carbon::now()->format('H:i') > '08:00' ? 'Terlambat' : 'Tepat Waktu',
+                                'is_manual'   => false,
                             ]);
                         }
                     } else { // tap_out
                         if ($attendance) {
                             $attendance->tap_out = $waktuSekarang;
                             $attendance->save();
-                        } else {
-                            Attendance::create([
-                                'employee_id' => $employee->id,
-                                'date' => $hariIni,
-                                'tap_out' => $waktuSekarang,
-                                'status' => 'Tepat Waktu',
-                                'is_manual' => false,
-                            ]);
                         }
                     }
 
-                    // Success response payload containing which solenoid to activate
+                    // Kirim response ke ESP (dengan direction yang sesuai agar relay yang benar terbuka)
                     $responsePayload = json_encode([
-                        'status' => 'success',
-                        'message' => 'valid',
-                        'name' => $employee->name,
-                        'uid' => $uid,
-                        'direction' => ($nextDirection === 'tap_in' ? 'masuk' : 'keluar'),
-                        'relay_ch' => $relayCh
+                        'status'    => 'success',
+                        'message'   => 'valid',
+                        'name'      => $employee->name,
+                        'uid'       => $uid,
+                        'direction' => $directionRaw,  // kembalikan direction asli dari ESP
+                        'relay_ch'  => $relayCh
                     ]);
                     $mqtt->publish($commandTopic, $responsePayload, 0);
-                    $this->info("Akses Pintu success published to {$commandTopic}");
+                    $this->info("Akses Pintu success [{$directionRaw}] published to {$commandTopic}");
                 }
 
                 // Node 3: KANTIN (Flat 12K Transaction)

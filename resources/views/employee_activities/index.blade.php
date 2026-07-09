@@ -1,13 +1,22 @@
 <x-app-layout>
-    <!-- Header Page -->
     <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800">Aktivitas Keluar Masuk</h2>
             <p class="text-gray-500 text-sm mt-1">Monitoring tap kartu RFID karyawan di gerbang rolling door secara real-time.</p>
         </div>
-        <a href="{{ route('employee-activities.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-0.5 flex items-center">
-            <i class="ph ph-plus mr-2 text-lg"></i> Rekam Aktivitas Manual
-        </a>
+        <div class="flex items-center gap-3">
+            {{-- Live Indicator --}}
+            <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold px-3 py-1.5 rounded-full" id="live-badge">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                LIVE &bull; <span id="last-refresh-time">--:--:--</span>
+            </div>
+            <a href="{{ route('employee-activities.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-0.5 flex items-center">
+                <i class="ph ph-plus mr-2 text-lg"></i> Rekam Aktivitas Manual
+            </a>
+        </div>
     </div>
 
     <!-- Alert / Success Message -->
@@ -38,7 +47,7 @@
             <div class="flex justify-between items-start relative z-10">
                 <div>
                     <h3 class="text-emerald-100 font-medium text-sm mb-1">Tap In Hari Ini</h3>
-                    <div class="text-4xl font-extrabold mb-1">{{ $totalTapInToday }}</div>
+                    <div class="text-4xl font-extrabold mb-1" id="stat-tap-in">{{ $totalTapInToday }}</div>
                     <p class="text-xs text-emerald-100/80">Karyawan masuk perusahaan</p>
                 </div>
                 <div class="w-12 h-12 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center shadow-inner">
@@ -54,7 +63,7 @@
             <div class="flex justify-between items-start relative z-10">
                 <div>
                     <h3 class="text-amber-100 font-medium text-sm mb-1">Tap Out Hari Ini</h3>
-                    <div class="text-4xl font-extrabold mb-1">{{ $totalTapOutToday }}</div>
+                    <div class="text-4xl font-extrabold mb-1" id="stat-tap-out">{{ $totalTapOutToday }}</div>
                     <p class="text-xs text-amber-100/80">Karyawan keluar perusahaan</p>
                 </div>
                 <div class="w-12 h-12 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center shadow-inner">
@@ -70,7 +79,7 @@
             <div class="flex justify-between items-start relative z-10">
                 <div>
                     <h3 class="text-indigo-100 font-medium text-sm mb-1">Di Dalam Perusahaan</h3>
-                    <div class="text-4xl font-extrabold mb-1">{{ $employeesInsideCount }}</div>
+                    <div class="text-4xl font-extrabold mb-1" id="stat-inside">{{ $employeesInsideCount }}</div>
                     <p class="text-xs text-indigo-100/80">Estimasi karyawan saat ini</p>
                 </div>
                 <div class="w-12 h-12 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center shadow-inner">
@@ -175,7 +184,7 @@
                         <th class="pb-4 font-medium px-4 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm">
+                <tbody class="text-sm" id="activities-tbody" style="transition: opacity 0.2s ease;">
                     @forelse($activities as $act)
                     <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/70 transition-all duration-200">
                         <!-- Employee Info -->
@@ -263,7 +272,7 @@
         </div>
     </div>
 
-    <!-- Toggle Filter Inputs Script -->
+    <!-- Toggle Filter Inputs Script + Auto Refresh -->
     <script>
         function updateFilterInputs() {
             document.querySelectorAll('.filter-input').forEach(el => el.style.display = 'none');
@@ -276,5 +285,70 @@
             }
         }
         document.addEventListener('DOMContentLoaded', updateFilterInputs);
+
+        // ── AUTO REFRESH SETIAP 2 DETIK ──
+        (function() {
+            const INTERVAL = 2000;
+            let isInteracting = false;
+            let timer = null;
+
+            function doRefresh() {
+                if (isInteracting || document.hidden) return;
+
+                fetch(window.location.href, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-Auto-Refresh': '1' }
+                })
+                .then(r => r.text())
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                    // Update tbody
+                    const newTbody = doc.getElementById('activities-tbody');
+                    const curTbody = document.getElementById('activities-tbody');
+                    if (newTbody && curTbody) {
+                        curTbody.style.opacity = '0.4';
+                        setTimeout(() => {
+                            curTbody.innerHTML = newTbody.innerHTML;
+                            curTbody.style.opacity = '1';
+                        }, 150);
+                    }
+
+                    // Update stat cards
+                    ['stat-tap-in', 'stat-tap-out', 'stat-inside'].forEach(id => {
+                        const newEl = doc.getElementById(id);
+                        const curEl = document.getElementById(id);
+                        if (newEl && curEl && newEl.textContent !== curEl.textContent) {
+                            curEl.textContent = newEl.textContent;
+                            curEl.style.transform = 'scale(1.15)';
+                            setTimeout(() => curEl.style.transition = 'transform 0.3s', 0);
+                            setTimeout(() => { curEl.style.transform = 'scale(1)'; }, 300);
+                        }
+                    });
+
+                    // Update timestamp
+                    const el = document.getElementById('last-refresh-time');
+                    if (el) el.textContent = new Date().toLocaleTimeString('id-ID');
+                })
+                .catch(() => {}); // Silent fail
+            }
+
+            // Pause saat user berinteraksi dengan filter
+            const form = document.getElementById('filterForm');
+            if (form) {
+                form.addEventListener('focusin',  () => { isInteracting = true; });
+                form.addEventListener('focusout', () => { setTimeout(() => { isInteracting = false; }, 800); });
+                form.addEventListener('submit',   () => { clearInterval(timer); }); // Stop saat filter disubmit
+            }
+
+            // Pause saat tab tidak aktif
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) { clearInterval(timer); }
+                else { timer = setInterval(doRefresh, INTERVAL); }
+            });
+
+            // Mulai
+            doRefresh(); // langsung refresh pertama kali
+            timer = setInterval(doRefresh, INTERVAL);
+        })();
     </script>
 </x-app-layout>

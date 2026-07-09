@@ -34,13 +34,13 @@
 #include <ArduinoJson.h>
 
 // --- WIFI & MQTT CONFIG ---
-const char* ssid = "NAMA_WIFI_ANDA";         // Ganti dengan SSID Wi-Fi Anda
-const char* password = "PASSWORD_WIFI_ANDA"; // Ganti dengan password Wi-Fi Anda
-const char* mqtt_server = "broker.hivemq.com";
-const int mqtt_port = 1883;
+const char* ssid     = "taptrack";
+const char* password = "apayaaaa";
+const char* mqtt_server = "10.39.197.137";
+const int   mqtt_port   = 1883;
 
 // Topic MQTT
-const char* topic_tap = "taptrack/absensi/tap";
+const char* topic_tap     = "taptrack/absensi/tap";
 const char* topic_command = "taptrack/absensi/command";
 
 // --- PIN DEFINITIONS ---
@@ -48,6 +48,11 @@ const char* topic_command = "taptrack/absensi/command";
 #define RST_1_PIN   2
 #define SS_2_PIN    32
 #define RST_2_PIN   33
+
+// SPI pins eksplisit (VSPI default ESP32)
+#define SPI_SCK   18
+#define SPI_MISO  19
+#define SPI_MOSI  23
 
 // --- DEVICE INITIALIZATION ---
 MFRC522 mfrc522_1(SS_1_PIN, RST_1_PIN);
@@ -70,10 +75,11 @@ void refreshDevices();
 void setup() {
   Serial.begin(115200);
   
-  // SPI Bus & RFID
-  SPI.begin();
+  // SPI Bus & RFID — pin eksplisit agar tidak konflik dengan WiFi
+  SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SS_1_PIN);
   mfrc522_1.PCD_Init();
   mfrc522_2.PCD_Init();
+  delay(50);
   
   // LCD
   lcd.init();
@@ -84,6 +90,13 @@ void setup() {
   setup_wifi();
   mqttClient.setServer(mqtt_server, mqtt_port);
   mqttClient.setCallback(mqttCallback);
+
+  // Re-init RFID setelah WiFi selesai (WiFi kadang ganggu SPI)
+  delay(200);
+  mfrc522_1.PCD_Init();
+  mfrc522_2.PCD_Init();
+  delay(50);
+  Serial.println("[RFID] Re-init pasca WiFi selesai.");
 }
 
 void loop() {
@@ -132,6 +145,11 @@ void setup_wifi() {
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("\nWi-Fi connected!");
+
+    // Kurangi TX power agar daya RFID tidak terganggu
+    WiFi.setTxPower(WIFI_POWER_8_5dBm);
+    Serial.println("[WiFi] TX power diturunkan untuk stabilkan daya RFID.");
+
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("WIFI TERHUBUNG! ");

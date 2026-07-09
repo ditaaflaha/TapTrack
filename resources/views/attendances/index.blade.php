@@ -4,9 +4,18 @@
             <h2 class="text-2xl font-bold text-gray-800">Absensi Tap</h2>
             <p class="text-gray-500 text-sm mt-1">Pantau kehadiran harian dan riwayat keterlambatan karyawan.</p>
         </div>
-        <a href="{{ route('attendances.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all flex items-center">
-            <i class="ph ph-plus mr-2"></i> Rekam Absensi Manual
-        </a>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold px-3 py-1.5 rounded-full">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                LIVE &bull; <span id="last-refresh-time">--:--:--</span>
+            </div>
+            <a href="{{ route('attendances.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all flex items-center">
+                <i class="ph ph-plus mr-2"></i> Rekam Absensi Manual
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
@@ -123,7 +132,7 @@
                         <th class="pb-3 font-medium px-4 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm">
+                <tbody class="text-sm" id="attendances-tbody" style="transition: opacity 0.2s ease;">
                     @forelse($attendances as $attn)
                     <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                         <td class="py-4 px-4 text-gray-800">
@@ -222,5 +231,43 @@
             }
         }
         document.addEventListener('DOMContentLoaded', updateFilterInputs);
+
+        // ── AUTO REFRESH SETIAP 2 DETIK ──
+        (function() {
+            const INTERVAL = 2000;
+            let isInteracting = false;
+            let timer = null;
+
+            function doRefresh() {
+                if (isInteracting || document.hidden) return;
+                fetch(window.location.href, { headers: { 'X-Auto-Refresh': '1' } })
+                .then(r => r.text())
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const newTbody = doc.getElementById('attendances-tbody');
+                    const curTbody = document.getElementById('attendances-tbody');
+                    if (newTbody && curTbody) {
+                        curTbody.style.opacity = '0.4';
+                        setTimeout(() => { curTbody.innerHTML = newTbody.innerHTML; curTbody.style.opacity = '1'; }, 150);
+                    }
+                    const el = document.getElementById('last-refresh-time');
+                    if (el) el.textContent = new Date().toLocaleTimeString('id-ID');
+                }).catch(() => {});
+            }
+
+            const form = document.getElementById('filterForm');
+            if (form) {
+                form.addEventListener('focusin',  () => { isInteracting = true; });
+                form.addEventListener('focusout', () => { setTimeout(() => { isInteracting = false; }, 800); });
+                form.addEventListener('submit',   () => { clearInterval(timer); });
+            }
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) clearInterval(timer);
+                else timer = setInterval(doRefresh, INTERVAL);
+            });
+
+            doRefresh();
+            timer = setInterval(doRefresh, INTERVAL);
+        })();
     </script>
 </x-app-layout>

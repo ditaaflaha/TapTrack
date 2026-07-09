@@ -1,4 +1,18 @@
 /*
+ * FILE INI SUDAH DIARSIPKAN.
+ *
+ * Firmware aktif sekarang dibagi menjadi dua file terpisah:
+ *   - main_masuk.cpp  -> Upload ke ESP32 yang dipasang di PINTU MASUK
+ *   - main_keluar.cpp -> Upload ke ESP32 yang dipasang di PINTU KELUAR
+ *
+ * Gunakan perintah PlatformIO berikut untuk upload:
+ *   pio run -e masuk  -t upload   (untuk ESP Masuk)
+ *   pio run -e keluar -t upload   (untuk ESP Keluar)
+ *
+ * File ini tidak dikompilasi dan hanya disimpan sebagai referensi.
+ */
+
+/*
  * TITIK 2: AKSES PINTU (Single RFID + 2-Channel Solenoid Relay) - PlatformIO Source
  * ----------------------------------------------------------------------------
  * Hardware: ESP32 DevKit v1
