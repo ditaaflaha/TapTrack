@@ -173,6 +173,12 @@ void loop() {
 void setupWifi() {
   Serial.printf("Menghubungkan ke WiFi: %s\n", WIFI_SSID);
 
+  // Pastikan mode STA dan reset koneksi lama
+  WiFi.disconnect(true);
+  delay(200);
+  WiFi.mode(WIFI_STA);
+  delay(100);
+
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("MENYAMBUNG WIFI ");
@@ -181,12 +187,18 @@ void setupWifi() {
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
+  // Timeout 30 detik (60 x 500ms)
   int counter = 0;
-  while (WiFi.status() != WL_CONNECTED && counter < 30) {
+  const int MAX_ATTEMPTS = 60;
+  while (WiFi.status() != WL_CONNECTED && counter < MAX_ATTEMPTS) {
     delay(500);
     Serial.print(".");
-    lcd.setCursor(counter % 16, 1);
-    lcd.print(".");
+    // Tampilkan sisa waktu di LCD baris 2
+    int sisaDetik = (MAX_ATTEMPTS - counter) / 2;
+    lcd.setCursor(0, 1);
+    lcd.print("Tunggu: ");
+    lcd.print(sisaDetik);
+    lcd.print("s   ");
     counter++;
   }
 
@@ -204,7 +216,7 @@ void setupWifi() {
     lcd.print(WiFi.localIP().toString());
     delay(1500);
   } else {
-    Serial.println("\nWiFi GAGAL. Mode Offline.");
+    Serial.printf("\nWiFi GAGAL setelah %d detik. Cek SSID/password/frekuensi.\n", MAX_ATTEMPTS / 2);
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("WIFI OFFLINE    ");
