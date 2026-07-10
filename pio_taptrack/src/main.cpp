@@ -124,22 +124,40 @@ void loop() {
 
 void setup_wifi() {
     Serial.printf("Connecting to Wi-Fi: %s\n", WIFI_SSID);
+
+    // Pastikan mode STA dan reset koneksi lama
+    WiFi.disconnect(true);
+    delay(200);
+    WiFi.mode(WIFI_STA);
+    delay(100);
+
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("MENYAMBUNG WIFI ");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
 
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+    // Timeout 30 detik (60 x 500ms)
     int counter = 0;
-    while (WiFi.status() != WL_CONNECTED && counter < 20) {
+    const int MAX_ATTEMPTS = 60;
+    while (WiFi.status() != WL_CONNECTED && counter < MAX_ATTEMPTS) {
         delay(500);
         Serial.print(".");
-        lcd.setCursor(counter % 16, 1);
-        lcd.print(".");
+        // Tampilkan sisa waktu di LCD baris 2
+        int sisaDetik = (MAX_ATTEMPTS - counter) / 2;
+        lcd.setCursor(0, 1);
+        lcd.print("Tunggu: ");
+        lcd.print(sisaDetik);
+        lcd.print("s   ");
         counter++;
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\nWi-Fi connected!");
+        Serial.printf("\nWiFi terhubung! IP: %s\n", WiFi.localIP().toString().c_str());
+        // Kurangi TX power agar tidak ganggu RFID
+        WiFi.setTxPower(WIFI_POWER_8_5dBm);
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("WIFI TERHUBUNG! ");
@@ -147,10 +165,12 @@ void setup_wifi() {
         lcd.print(WiFi.localIP().toString());
         delay(1500);
     } else {
-        Serial.println("\nWi-Fi connection timeout.");
+        Serial.printf("\nWiFi GAGAL setelah %d detik. Cek SSID/password/frekuensi.\n", MAX_ATTEMPTS / 2);
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("WIFI OFFLINE    ");
+        lcd.setCursor(0, 1);
+        lcd.print("CEK KONEKSI...  ");
         delay(1500);
     }
     tampilkanStandby();
